@@ -81,6 +81,12 @@ git clone --depth=1 https://github.com/dianping/cat.git
 
 - [部署FAQ](https://github.com/dianping/cat/wiki/cat_faq)
 
+#### 新增调用方式：Docker Compose 一键启动（本地体验）
+
+- 进入 `docker` 目录并执行：`docker compose up -d`
+- 启动后访问：`http://localhost:8080/cat`
+- 该方式会同时拉起 CAT 与 MySQL，适合快速验证与演示
+
 #### 服务端
 
 - [集群部署](https://github.com/dianping/cat/wiki/readme_server)
