@@ -660,6 +660,55 @@ public class Cat {
         }
     }
 
+    /**
+     * Execute a runnable block as one CAT transaction.
+     *
+     * @param type     transaction type
+     * @param name     transaction name
+     * @param runnable business runnable block
+     * @throws Exception throwable from runnable
+     */
+    public static void call(String type, String name, CatRunnable runnable) throws Exception {
+        Transaction transaction = Cat.newTransaction(type, name);
+
+        try {
+            runnable.run();
+            transaction.setStatus(Transaction.SUCCESS);
+        } catch (Exception e) {
+            transaction.setStatus(e);
+            Cat.logError(e);
+            throw e;
+        } finally {
+            transaction.complete();
+        }
+    }
+
+    /**
+     * Execute a callable block as one CAT transaction.
+     *
+     * @param type     transaction type
+     * @param name     transaction name
+     * @param callable business callable block
+     * @return callable result
+     * @throws Exception throwable from callable
+     */
+    public static <T> T call(String type, String name, CatCallable<T> callable) throws Exception {
+        Transaction transaction = Cat.newTransaction(type, name);
+
+        try {
+            T result = callable.call();
+
+            transaction.setStatus(Transaction.SUCCESS);
+            return result;
+        } catch (Exception e) {
+            transaction.setStatus(e);
+            Cat.logError(e);
+            throw e;
+        } finally {
+            transaction.complete();
+        }
+    }
+
     private static void validate() {
         String enable = Properties.forString().fromEnv().fromSystem().getProperty("CAT_ENABLED", "true");
 
@@ -693,6 +742,16 @@ public class Cat {
         void addProperty(String key, String value);
 
         String getProperty(String key);
+    }
+
+    public interface CatRunnable {
+
+        void run() throws Exception;
+    }
+
+    public interface CatCallable<T> {
+
+        T call() throws Exception;
     }
 
 }
