@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class CatTest {
     @Before
     public void initCat() {
@@ -27,6 +29,28 @@ public class CatTest {
     @Test
     public void metric() {
         Cat.logMetricForCount("myKey", 1);
+    }
+
+    @Test
+    public void callRunnable() throws Exception {
+        Cat.call("test", "callRunnable", new Cat.CatRunnable() {
+            @Override
+            public void run() {
+                Cat.logEvent("test", "insideCallRunnable");
+            }
+        });
+    }
+
+    @Test
+    public void callCallable() throws Exception {
+        int value = Cat.call("test", "callCallable", new Cat.CatCallable<Integer>() {
+            @Override
+            public Integer call() {
+                return 42;
+            }
+        });
+
+        assertEquals(42, value);
     }
 
     @After
